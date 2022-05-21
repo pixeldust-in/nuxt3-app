@@ -1,22 +1,12 @@
 import { IPost } from "~/types";
 
-// const state = reactive<{
-//   posts: IPost[];
-//   fetched: boolean;
-//   loading: boolean;
-// }>({
-//   posts: [],
-//   fetched: false,
-//   loading: false,
-// });
-
-// const state = useState<{
-//   posts: IPost[];
-//   fetched: boolean;
-//   loading: boolean;
-// }>("state", () => {
-//   return { posts: [], fetched: false, loading: false };
-// });
+const state = reactive<{
+  posts: IPost[];
+  fetched: boolean;
+}>({
+  posts: [],
+  fetched: false,
+});
 
 export const usePosts = async () => {
   const {
@@ -29,5 +19,15 @@ export const usePosts = async () => {
       $fetch("https://jsonplaceholder.typicode.com/posts") as Promise<IPost[]>
   );
 
-  return { posts, pending, refresh };
+  watchEffect(() => {
+    if (!pending.value) {
+      state.posts = posts.value;
+      state.fetched = true;
+    } else {
+      state.posts = [];
+      state.fetched = false;
+    }
+  });
+
+  return { pending, refresh, ...toRefs(state) };
 };
