@@ -26,11 +26,10 @@
   </div>
 </template>
 <script setup lang="ts">
-const { posts, pending, refresh } = await usePosts();
+const { data: posts, pending, refresh } = await useLazyFetch("/api/posts");
 
 const refreshData = async () => {
   await refresh();
 };
-
 const { $hello } = useNuxtApp();
 </script>
